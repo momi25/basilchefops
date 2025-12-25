@@ -1,0 +1,29 @@
+{
+  "name": "basil-grape-chef-ops",
+  "version": "2.0.0",
+  "description": "Chef Operations Board for Basil & Grape - Italian Wine Bar, 46-48 George Street, Croydon CR0 1PB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["restaurant", "kitchen", "operations", "basil-grape", "croydon"],
+  "author": "Basil & Grape Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^9.4.3",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.7.4",
+    "uuid": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
