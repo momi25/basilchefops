@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Basil & Grape Chef Ops</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0c0b0f;--card:#151421;--muted:#9da0b5;--text:#e8e9f5;--accent:#e45f3b;--line:rgba(255,255,255,0.08)}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Manrope',sans-serif;background:radial-gradient(circle at 30% 20%,rgba(228,95,59,0.12),transparent 40%),radial-gradient(circle at 70% 80%,rgba(240,193,79,0.08),transparent 35%),linear-gradient(145deg,#0b0a12,#0e0d16);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+    .login-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:48px 40px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.35);text-align:center}
+    .logo{font-family:'Playfair Display',serif;font-size:32px;color:var(--text);margin-bottom:8px}
+    .logo span{color:var(--accent)}
+    .tagline{color:var(--muted);font-size:14px;margin-bottom:32px}
+    .form-group{margin-bottom:20px;text-align:left}
+    label{display:block;color:var(--muted);font-size:13px;margin-bottom:8px;font-weight:500}
+    input{width:100%;padding:14px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--line);border-radius:12px;color:var(--text);font-size:16px;transition:border-color 0.2s,box-shadow 0.2s}
+    input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(228,95,59,0.15)}
+    input::placeholder{color:var(--muted);opacity:0.6}
+    .pin-input{letter-spacing:8px;text-align:center;font-size:24px;font-weight:700}
+    button{width:100%;padding:16px;background:linear-gradient(135deg,var(--accent),#c8422a);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(228,95,59,0.35);transition:transform 0.1s,filter 0.2s;margin-top:12px}
+    button:hover{filter:brightness(1.05)}
+    button:active{transform:translateY(1px)}
+    button:disabled{opacity:0.6;cursor:not-allowed}
+    .error{background:rgba(249,112,112,0.15);border:1px solid rgba(249,112,112,0.3);color:#fca5a5;padding:12px;border-radius:10px;font-size:14px;margin-bottom:20px;display:none}
+    .error.show{display:block}
+    .address{margin-top:24px;padding-top:24px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+    .address a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="logo">Basil <span>&</span> Grape</div>
+    <p class="tagline">Chef Operations Board</p>
+    <div class="error" id="error-msg"></div>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" placeholder="e.g. Marco" required autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="pin">PIN Code</label>
+        <input type="password" id="pin" class="pin-input" placeholder="••••" required maxlength="8" inputmode="numeric">
+      </div>
+      <button type="submit" id="submit-btn">Sign In</button>
+    </form>
+    <div class="address">
+      46-48 George Street · Croydon · CR0 1PB<br>
+      <a href="https://basilandgrape.com" target="_blank">basilandgrape.com</a>
+    </div>
+  </div>
+  <script>
+    const token = localStorage.getItem('bg-token');
+    if (token) {
+      fetch('/api/auth/verify', { headers: { 'Authorization': `Bearer ${token}` } })
+        .then(r => r.ok ? window.location.href = '/' : null).catch(() => {});
+    }
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+    const submitBtn = document.getElementById('submit-btn');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const pin = document.getElementById('pin').value;
+      if (!name || !pin) return;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Signing in...';
+      errorMsg.classList.remove('show');
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, pin })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Login failed');
+        localStorage.setItem('bg-token', data.token);
+        localStorage.setItem('bg-user', JSON.stringify(data.user));
+        window.location.href = '/';
+      } catch (err) {
+        errorMsg.textContent = err.message;
+        errorMsg.classList.add('show');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign In';
+      }
+    });
+  </script>
+</body>
+</html>
