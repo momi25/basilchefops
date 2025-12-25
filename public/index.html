@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chef Operations Board for Basil & Grape - Italian Wine Bar & Cicchetti, Croydon">
+  <meta name="theme-color" content="#0c0b0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <title>Chef Ops Board | Basil & Grape</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍕</text></svg>">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="loading">
+  
+  <!-- Loading Screen -->
+  <div class="loading-screen">
+    <div class="loading-logo">Basil <span>&</span> Grape</div>
+    <div class="loading-spinner"></div>
+  </div>
+
+  <!-- Main Application -->
+  <div class="page">
+    
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         HEADER
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <header class="hero">
+      <div class="hero-content">
+        <div class="brand">
+          Basil <span class="accent">&</span> Grape
+          <span class="pill">Chef Ops · 46-48 George St, Croydon · CR0 1PB</span>
+        </div>
+        <p class="hero-sub">
+          Italian wine bar & cicchetti. Track stock, log maintenance, brief the next shift, and keep service running smoothly.
+        </p>
+        <div class="toolbar">
+          <button id="copy-brief" class="soft-btn">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+            </svg>
+            Copy service brief
+          </button>
+          <button id="reset-board" class="soft-btn">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+            </svg>
+            Reset board
+          </button>
+          <button id="logout-btn" class="soft-btn">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"/>
+            </svg>
+            Logout
+          </button>
+        </div>
+      </div>
+      <div class="hero-meta">
+        <div class="contact-box">
+          <strong>Floor lead:</strong> <span id="floor-lead">Loading...</span><br>
+          <strong>Phone:</strong> <span id="contact-phone">Loading...</span>
+        </div>
+        <div id="user-badge" class="user-badge hidden">
+          <svg viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+          </svg>
+          <span>Loading...</span>
+        </div>
+        <div class="sync-indicator">
+          <span class="sync-dot"></span>
+          <span class="sync-text">Connecting...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         STATS & QUICK INFO ROW
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="grid">
+      
+      <!-- Service Snapshot -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h3>Service Snapshot</h3>
+            <small>Quick counts for handover</small>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat danger">
+            <div class="stat-content">
+              <div class="label">Out of Stock</div>
+              <div class="value" id="count-out">0</div>
+            </div>
+            <span class="badge none">STOP</span>
+          </div>
+          <div class="stat warning">
+            <div class="stat-content">
+              <div class="label">Running Low</div>
+              <div class="value" id="count-low">0</div>
+            </div>
+            <span class="badge low">WATCH</span>
+          </div>
+          <div class="stat success">
+            <div class="stat-content">
+              <div class="label">Maintenance</div>
+              <div class="value" id="count-maint">0</div>
+            </div>
+            <span class="badge maint">FIX</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Notes -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h3>Team Notes</h3>
+            <small>Quick reminders for the shift</small>
+          </div>
+        </div>
+        <form id="note-form" class="single">
+          <input type="text" id="note-text" placeholder="e.g. Switch to backup dough batch; pre-slice oranges for spritz" required autocomplete="off">
+          <button type="submit">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add
+          </button>
+        </form>
+        <div class="list" id="note-list"></div>
+      </div>
+
+      <!-- Contact & Access -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h3>Contact & Access</h3>
+            <small>Keep guest comms at hand</small>
+          </div>
+        </div>
+        <div class="list">
+          <div class="item">
+            <div class="item-title">Address</div>
+            <div class="meta">46-48 George Street · Croydon · CR0 1PB · UK</div>
+          </div>
+          <div class="item">
+            <div class="item-title">Phone</div>
+            <form id="contact-form" class="single">
+              <input type="tel" id="contact-input" placeholder="Update contact number" autocomplete="tel">
+              <button type="submit" class="ghost-btn">Save</button>
+            </form>
+          </div>
+          <div class="item">
+            <div class="item-title">Floor Lead</div>
+            <form id="lead-form" class="single">
+              <input type="text" id="lead-input" placeholder="Name on shift" autocomplete="name">
+              <button type="submit" class="ghost-btn">Save</button>
+            </form>
+          </div>
+          <div class="item">
+            <div class="item-title">Hours</div>
+            <div class="meta">Tue-Thu 12-22:00 · Fri-Sat 12-23:00 · Sun 12-21:00</div>
+          </div>
+          <div class="item">
+            <div class="item-title">Website</div>
+            <div class="meta">
+              <a href="https://basilandgrape.com" target="_blank" rel="noopener" style="color: var(--accent);">basilandgrape.com</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         FILTERS & SEARCH
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <h3>Filters & Search</h3>
+          <small>Find items quickly across all lists</small>
+        </div>
+      </div>
+      <div class="subgrid">
+        <div>
+          <div class="tagline mb-1">Search items, notes, and maintenance</div>
+          <form id="search-form" class="single">
+            <div class="search-wrapper" style="flex: 1;">
+              <svg viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+              </svg>
+              <input type="search" id="search-input" placeholder="Search across all items..." autocomplete="off">
+            </div>
+            <button type="submit" class="ghost-btn">Clear</button>
+          </form>
+        </div>
+        <div>
+          <div class="tagline mb-1">Filter by severity</div>
+          <div class="chips">
+            <span class="chip active" data-sev="none">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+              </svg>
+              Stops / Critical
+            </span>
+            <span class="chip active" data-sev="low">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+              Low / Watch
+            </span>
+            <span class="chip active" data-sev="maint">
+              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+                <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+              </svg>
+              Maintenance
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         SHIFT HANDOVER LOG
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <h3>Shift Handover Log</h3>
+          <small>Keep a running timeline between teams</small>
+        </div>
+      </div>
+      <form id="shift-form" class="triple">
+        <select id="shift-type">
+          <option value="Lunch">Lunch</option>
+          <option value="Dinner" selected>Dinner</option>
+          <option value="Late">Late</option>
+          <option value="Close">Close</option>
+        </select>
+        <input type="text" id="shift-focus" placeholder="Focus (e.g. Spritz hour, pizza oven shared with FOH)" required autocomplete="off">
+        <input type="text" id="shift-eta" placeholder="Next check (e.g. 18:30 temp check)" autocomplete="off">
+        <button type="submit">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+          Log Handover
+        </button>
+      </form>
+      <div class="list" id="shift-list"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         STOCK TRACKING
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <div class="stack">
+      
+      <!-- Out of Stock -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h3>Out of Stock</h3>
+            <small>Items that are completely unavailable - steer guests away</small>
+          </div>
+          <span class="badge none">STOPS</span>
+        </div>
+        <form id="out-form">
+          <input type="text" id="out-item" placeholder="Item (e.g. Buffalo mozzarella)" required autocomplete="off">
+          <input type="text" id="out-detail" placeholder="Note (e.g. Supplier delivering tomorrow AM)" autocomplete="off">
+          <select id="out-sev">
+            <option value="none">Sold Out</option>
+            <option value="low">Limited Only</option>
+          </select>
+          <button type="submit">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add Stop
+          </button>
+        </form>
+        <div class="list" id="out-list"></div>
+      </div>
+
+      <!-- Running Low -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h3>Running Low</h3>
+            <small>Items that may 86 mid-service - monitor closely</small>
+          </div>
+          <span class="badge low">WATCH</span>
+        </div>
+        <form id="low-form">
+          <input type="text" id="low-item" placeholder="Item (e.g. House red by glass)" required autocomplete="off">
+          <input type="text" id="low-detail" placeholder="Note (e.g. 5 bottles left, backup ordered)" autocomplete="off">
+          <select id="low-sev">
+            <option value="low">Low Stock</option>
+            <option value="none">Critical - Almost Out</option>
+          </select>
+          <button type="submit">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add Watch
+          </button>
+        </form>
+        <div class="list" id="low-list"></div>
+      </div>
+
+      <!-- Maintenance -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h3>Maintenance</h3>
+            <small>Equipment and facilities issues</small>
+          </div>
+          <span class="badge maint">FIX</span>
+        </div>
+        <form id="maint-form">
+          <input type="text" id="maint-item" placeholder="Item (e.g. Pizza oven left deck)" required autocomplete="off">
+          <input type="text" id="maint-detail" placeholder="Note (e.g. Running cool, rotate pies to right side)" autocomplete="off">
+          <select id="maint-sev">
+            <option value="maint">Monitor</option>
+            <option value="none">Out of Action</option>
+          </select>
+          <button type="submit">
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+              <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+            Add Ticket
+          </button>
+        </form>
+        <div class="list" id="maint-list"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════
+         FOOTER
+         ═══════════════════════════════════════════════════════════════════════ -->
+    <footer style="text-align: center; padding: 24px 0; color: var(--muted); font-size: 13px;">
+      <p>
+        <strong style="color: var(--text);">Basil & Grape</strong> · Italian Wine Bar & Cicchetti<br>
+        46-48 George Street, Croydon CR0 1PB · 
+        <a href="https://basilandgrape.com" target="_blank" rel="noopener" style="color: var(--accent);">basilandgrape.com</a>
+      </p>
+      <p style="margin-top: 8px; opacity: 0.7;">
+        Chef Ops Board v2.0
+      </p>
+    </footer>
+
+  </div>
+
+  <!-- Socket.IO -->
+  <script src="/socket.io/socket.io.js"></script>
+  
+  <!-- Application Script -->
+  <script src="/js/app.js"></script>
+
+</body>
+</html>
